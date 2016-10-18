@@ -1,0 +1,429 @@
+I, [2016-09-12T11:31:05.906101 #3788]  INFO -- mysql-centos-7: -----> Converging <mysql-centos-7>...
+I, [2016-09-12T11:31:05.906726 #3788]  INFO -- mysql-centos-7: Preparing files for transfer
+I, [2016-09-12T11:31:05.906797 #3788]  INFO -- mysql-centos-7: Preparing playbook
+I, [2016-09-12T11:31:05.907353 #3788]  INFO -- mysql-centos-7: Preparing inventory
+I, [2016-09-12T11:31:05.907447 #3788]  INFO -- mysql-centos-7: Preparing modules
+I, [2016-09-12T11:31:05.907669 #3788]  INFO -- mysql-centos-7: nothing to do for modules
+I, [2016-09-12T11:31:05.907715 #3788]  INFO -- mysql-centos-7: Preparing roles
+I, [2016-09-12T11:31:06.111863 #3788]  INFO -- mysql-centos-7: Preparing ansible.cfg file
+I, [2016-09-12T11:31:06.112003 #3788]  INFO -- mysql-centos-7: Empty ansible.cfg generated
+I, [2016-09-12T11:31:06.112320 #3788]  INFO -- mysql-centos-7: Preparing group_vars
+I, [2016-09-12T11:31:06.112547 #3788]  INFO -- mysql-centos-7: nothing to do for group_vars
+I, [2016-09-12T11:31:06.112633 #3788]  INFO -- mysql-centos-7: Preparing additional_copy_path
+I, [2016-09-12T11:31:06.112766 #3788]  INFO -- mysql-centos-7: Preparing host_vars
+I, [2016-09-12T11:31:06.112968 #3788]  INFO -- mysql-centos-7: nothing to do for host_vars
+I, [2016-09-12T11:31:06.113048 #3788]  INFO -- mysql-centos-7: Preparing hosts file
+I, [2016-09-12T11:31:06.113330 #3788]  INFO -- mysql-centos-7: Preparing spec
+I, [2016-09-12T11:31:06.113476 #3788]  INFO -- mysql-centos-7: nothing to do for spec
+I, [2016-09-12T11:31:06.113532 #3788]  INFO -- mysql-centos-7: Preparing library plugins
+I, [2016-09-12T11:31:06.113767 #3788]  INFO -- mysql-centos-7: nothing to do for library plugins
+I, [2016-09-12T11:31:06.113815 #3788]  INFO -- mysql-centos-7: Preparing callback plugins
+I, [2016-09-12T11:31:06.113994 #3788]  INFO -- mysql-centos-7: nothing to do for callback plugins
+I, [2016-09-12T11:31:06.114038 #3788]  INFO -- mysql-centos-7: Preparing filter_plugins
+I, [2016-09-12T11:31:06.114244 #3788]  INFO -- mysql-centos-7: nothing to do for filter_plugins
+I, [2016-09-12T11:31:06.114284 #3788]  INFO -- mysql-centos-7: Preparing lookup_plugins
+I, [2016-09-12T11:31:06.114449 #3788]  INFO -- mysql-centos-7: nothing to do for lookup_plugins
+I, [2016-09-12T11:31:06.114587 #3788]  INFO -- mysql-centos-7: Finished Preparing files for transfer
+I, [2016-09-12T11:31:06.114819 #3788]  INFO -- mysql-centos-7: Installing ansible, will try to determine platform os
+I, [2016-09-12T11:31:06.115331 #3788]  INFO -- mysql-centos-7: Going to install ansible with: 
+            if [ ! $(which ansible) ]; then
+              if [ -f /etc/centos-release ] || [ -f /etc/redhat-release ]; then
+                if [ -z `grep -q 'Amazon Linux' /etc/system-release` ]; then
+                
+            if [ ! $(which ansible) ]; then
+            
+                          if ! yum repolist epel | grep -q epel; then
+                sudo -E rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-`rpm -E %dist | sed -n 's/.*el\([0-9]\).*/\1/p'`.noarch.rpm
+              fi
+
+            sudo -E yum makecache
+            sudo -E yum -y install ansible libselinux-python git
+            fi
+
+                else
+                
+            if [ ! $(which ansible) ]; then
+              
+              sudo -E yum-config-manager --enable epel/x86_64
+              sudo -E yum -y install ansible git
+              sudo -E alternatives --set python /usr/bin/python2.6
+              sudo -E yum clean all
+              sudo -E yum install yum-python26 -y
+            fi
+
+                fi
+              elif [ -f /etc/SuSE-release ] || [ -f /etc/SUSE-brand ]; then
+                
+            if [ ! $(which ansible) ]; then
+              sudo -E zypper ar http://download.opensuse.org/repositories/devel:/languages:/python/SLE_12/devel:languages:python.repo
+              sudo -E zypper ar http://download.opensuse.org/repositories/systemsmanagement/SLE_12/systemsmanagement.repo
+              sudo -E zypper --gpg-auto-import-keys ref
+              sudo -E zypper --non-interactive install ansible
+            fi
+
+              else
+                
+            if [ ! $(which ansible) ]; then
+              sudo -E apt-get update
+
+              ## Install apt-utils to silence debconf warning: http://serverfault.com/q/358943/77156
+              sudo -E apt-get -y install apt-utils git
+
+              ## Fix debconf tty warning messages
+              export DEBIAN_FRONTEND=noninteractive
+
+              ## 13.10, 14.04 include add-apt-repository in software-properties-common
+              sudo -E apt-get -y install software-properties-common
+
+              ## 10.04, 12.04 include add-apt-repository in
+              sudo -E apt-get -y install python-software-properties
+
+              ## 10.04 version of add-apt-repository doesn't accept --yes
+              ## later versions require interaction from user, so we must specify --yes
+              ## First try with -y flag, else if it fails, try without.
+              ## "add-apt-repository: error: no such option: -y" is returned but is ok to ignore, we just retry
+              sudo -E add-apt-repository -y ppa:ansible/ansible || sudo -E add-apt-repository ppa:ansible/ansible
+              sudo -E apt-get update
+              sudo -E apt-get -y install ansible
+            fi
+
+              fi
+            fi
+          # Check whether a command exists - returns 0 if it does, 1 if it does not
+exists() {
+  if command -v $1 >/dev/null 2>&1
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# do_wget URL FILENAME
+do_wget() {
+  echo "trying wget..."
+  wget -O "$2" "$1" 2>/tmp/stderr
+  # check for bad return status
+  test $? -ne 0 && return 1
+  # check for 404 or empty file
+  grep "ERROR 404" /tmp/stderr 2>&1 >/dev/null
+  if test $? -eq 0 || test ! -s "$2"; then
+    return 1
+  fi
+  return 0
+}
+
+# do_curl URL FILENAME
+do_curl() {
+  echo "trying curl..."
+  curl -L "$1" > "$2"
+  # check for bad return status
+  [ $? -ne 0 ] && return 1
+  # check for bad output or empty file
+  grep "The specified key does not exist." "$2" 2>&1 >/dev/null
+  if test $? -eq 0 || test ! -s "$2"; then
+    return 1
+  fi
+  return 0
+}
+
+# do_fetch URL FILENAME
+do_fetch() {
+  echo "trying fetch..."
+  fetch -o "$2" "$1" 2>/tmp/stderr
+  # check for bad return status
+  test $? -ne 0 && return 1
+  return 0
+}
+
+# do_perl URL FILENAME
+do_perl() {
+  echo "trying perl..."
+  perl -e "use LWP::Simple; getprint($ARGV[0]);" "$1" > "$2"
+  # check for bad return status
+  test $? -ne 0 && return 1
+  # check for bad output or empty file
+  # grep "The specified key does not exist." "$2" 2>&1 >/dev/null
+  # if test $? -eq 0 || test ! -s "$2"; then
+  #   unable_to_retrieve_package
+  # fi
+  return 0
+}
+
+# do_python URL FILENAME
+do_python() {
+  echo "trying python..."
+  python -c "import sys,urllib2 ; sys.stdout.write(urllib2.urlopen(sys.argv[1]).read())" "$1" > "$2"
+  # check for bad return status
+  test $? -ne 0 && return 1
+  # check for bad output or empty file
+  #grep "The specified key does not exist." "$2" 2>&1 >/dev/null
+  #if test $? -eq 0 || test ! -s "$2"; then
+  #  unable_to_retrieve_package
+  #fi
+  return 0
+}
+
+# do_download URL FILENAME
+do_download() {
+  PATH=/opt/local/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+  export PATH
+
+  echo "downloading $1"
+  echo "  to file $2"
+
+  # we try all of these until we get success.
+  # perl, in particular may be present but LWP::Simple may not be installed
+
+  if exists wget; then
+    do_wget $1 $2 && return 0
+  fi
+
+  if exists curl; then
+    do_curl $1 $2 && return 0
+  fi
+
+  if exists fetch; then
+    do_fetch $1 $2 && return 0
+  fi
+
+  if exists perl; then
+    do_perl $1 $2 && return 0
+  fi
+
+  if exists python; then
+    do_python $1 $2 && return 0
+  fi
+
+  echo ">>>>>> wget, curl, fetch, perl or python not found on this instance."
+  return 16
+}
+
+          # Fix for https://github.com/test-kitchen/busser/issues/12
+          if [ -h /usr/bin/ruby ]; then
+              L=$(readlink -f /usr/bin/ruby)
+              sudo -E rm /usr/bin/ruby
+              sudo -E ln -s $L /usr/bin/ruby
+          fi
+            if [ -f /etc/centos-release ] || [ -f /etc/redhat-release ]; then
+            if [ -z `grep -q 'Amazon Linux' /etc/system-release` ]; then
+            rhelversion6=$(cat /etc/redhat-release | grep 'release 6')
+            rhelversion7=$(cat /etc/redhat-release | grep 'release 7')
+            # For CentOS6/CentOS7/RHEL6/RHEL7 install ruby from SCL
+            if [ -n "$rhelversion6" ] || [ -n "$rhelversion7" ]; then
+            if [ ! -d "/opt/rh/ruby200" ]; then
+              echo "-----> Installing ruby200 SCL in CentOS6/CentOS7/RHEL6/RHEL7 to install busser to run tests"
+              sudo -E yum install -y centos-release-scl
+              sudo -E yum install -y ruby200
+              sudo -E yum install -y ruby200-ruby-devel
+              echo "-----> Enabling ruby200"
+              source /opt/rh/ruby200/enable
+              echo "/opt/rh/ruby200/root/usr/lib64" | sudo tee -a /etc/ld.so.conf
+              sudo -E ldconfig
+              sudo -E ln -sf /opt/rh/ruby200/root/usr/bin/ruby /usr/bin/ruby
+              sudo -E ln -sf /opt/rh/ruby200/root/usr/bin/gem /usr/bin/gem
+            fi
+            else
+              if [ ! $(which ruby) ]; then
+                sudo -E yum makecache
+                sudo -E yum -y install ruby ruby-devel
+              fi
+            fi
+            else
+                sudo -E yum makecache
+                sudo -E yum -y install ruby ruby-devel gcc
+            fi
+            elif [ -f /etc/SuSE-release ]  || [ -f /etc/SUSE-brand ]; then
+                sudo -E zypper --gpg-auto-import-keys ref
+                sudo -E zypper --non-interactive install ruby ruby-devel ca-certificates ca-certificates-cacert ca-certificates-mozilla
+                sudo -E gem sources --add https://rubygems.org/
+            else
+              if [ ! $(which ruby) ]; then
+                sudo -E apt-get update
+                # default package selection for Debian/Ubuntu machines
+                PACKAGES="ruby1.9.1 ruby1.9.1-dev"
+                if [ "$(lsb_release -si)" = "Debian" ]; then
+                  debvers=$(sed 's/\..*//' /etc/debian_version)
+                  if [ $debvers -ge 8 ]; then
+                    # this is jessie or better, where ruby1.9.1 is
+                    # no longer in the repositories
+                    PACKAGES="ruby ruby-dev ruby2.1 ruby2.1-dev"
+                  fi
+                fi
+                if [ "$(lsb_release -si)" = "Ubuntu" ]; then
+                  ubuntuvers=$(lsb_release -sr | tr -d .)
+                  if [ $ubuntuvers -ge 1410 ]; then
+                    # Default ruby is 2.x in utopic and newer
+                    PACKAGES="ruby ruby-dev"
+                  fi
+                fi
+                sudo -E apt-get -y install $PACKAGES
+                if [ $debvers -eq 6 ]; then
+                    # in squeeze we need to update alternatives
+                    # for enable ruby1.9.1
+                    ALTERNATIVES_STRING="--install /usr/bin/ruby ruby /usr/bin/ruby1.9.1 10 --slave /usr/share/man/man1/ruby.1.gz ruby.1.gz /usr/share/man/man1/ruby1.9.1.1.gz --slave /usr/bin/erb erb /usr/bin/erb1.9.1 --slave /usr/bin/gem gem /usr/bin/gem1.9.1 --slave /usr/bin/irb irb /usr/bin/irb1.9.1 --slave /usr/bin/rake rake /usr/bin/rake1.9.1 --slave /usr/bin/rdoc rdoc /usr/bin/rdoc1.9.1 --slave /usr/bin/testrb testrb /usr/bin/testrb1.9.1 --slave /usr/share/man/man1/erb.1.gz erb.1.gz /usr/share/man/man1/erb1.9.1.1.gz --slave /usr/share/man/man1/gem.1.gz gem.1.gz /usr/share/man/man1/gem1.9.1.1.gz --slave /usr/share/man/man1/irb.1.gz irb.1.gz /usr/share/man/man1/irb1.9.1.1.gz --slave /usr/share/man/man1/rake.1.gz rake.1.gz /usr/share/man/man1/rake1.9.1.1.gz --slave /usr/share/man/man1/rdoc.1.gz rdoc.1.gz /usr/share/man/man1/rdoc1.9.1.1.gz --slave /usr/share/man/man1/testrb.1.gz testrb.1.gz /usr/share/man/man1/testrb1.9.1.1.gz"
+                    sudo -E update-alternatives $ALTERNATIVES_STRING
+                    # need to update gem tool because gem 1.3.7 from ruby 1.9.1 is broken
+                    sudo -E gem install rubygems-update
+                    sudo -E /var/lib/gems/1.9.1/bin/update_rubygems
+                    # clear local gem cache
+                    sudo -E rm -r /home/vagrant/.gem
+                fi
+              fi
+           fi
+
+I, [2016-09-12T11:31:06.767549 #3788]  INFO -- mysql-centos-7: Transferring files to <mysql-centos-7>
+I, [2016-09-12T11:32:44.054242 #3788]  INFO -- mysql-centos-7: Going to invoke ansible-playbook with: ANSIBLE_ROLES_PATH=/tmp/kitchen/roles sudo -E -s  ansible-playbook -i /tmp/kitchen/hosts  -c local -M /tmp/kitchen/modules         /tmp/kitchen/default.yml
+I, [2016-09-12T11:32:44.417557 #3788]  INFO -- mysql-centos-7: [1;35m [WARNING]: While constructing a mapping from
+I, [2016-09-12T11:32:44.417643 #3788]  INFO -- mysql-centos-7: /tmp/kitchen/roles/mysql/tasks/main.yml, line 30, column 3, found a duplicate
+I, [2016-09-12T11:32:44.417681 #3788]  INFO -- mysql-centos-7: dict key (when).  Using last defined value only.
+I, [2016-09-12T11:32:44.417711 #3788]  INFO -- mysql-centos-7: [0m
+I, [2016-09-12T11:32:44.479126 #3788]  INFO -- mysql-centos-7: [0;35m[DEPRECATION WARNING]: Instead of sudo/sudo_user, use become/become_user and 
+I, [2016-09-12T11:32:44.479209 #3788]  INFO -- mysql-centos-7: make sure become_method is 'sudo' (default).
+I, [2016-09-12T11:32:44.479245 #3788]  INFO -- mysql-centos-7: This feature will be removed in a 
+I, [2016-09-12T11:32:44.479276 #3788]  INFO -- mysql-centos-7: future release. Deprecation warnings can be disabled by setting 
+I, [2016-09-12T11:32:44.479304 #3788]  INFO -- mysql-centos-7: deprecation_warnings=False in ansible.cfg.[0m
+I, [2016-09-12T11:32:44.537982 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:44.538077 #3788]  INFO -- mysql-centos-7: PLAY [all] *********************************************************************
+I, [2016-09-12T11:32:44.644805 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:44.644889 #3788]  INFO -- mysql-centos-7: TASK [setup] *******************************************************************
+I, [2016-09-12T11:32:45.070893 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:45.079477 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:45.079572 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Install Firewalld (Debian/Ubuntu)] ***************************
+I, [2016-09-12T11:32:45.133755 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:45.143070 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:45.143159 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Start firewalld] *********************************************
+I, [2016-09-12T11:32:45.194546 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:45.203108 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:45.203196 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Wait for firewalld to start] *********************************
+I, [2016-09-12T11:32:45.261618 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:45.266542 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:45.266599 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Install python2] *********************************************
+I, [2016-09-12T11:32:45.320930 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:45.326618 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:45.326708 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Tag agent with firewalld in dataloop] ************************
+I, [2016-09-12T11:32:45.376892 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:45.386135 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:45.386382 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Install Firewalld (RHEL/CentOS)] *****************************
+I, [2016-09-12T11:32:47.989534 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:47.997286 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:47.997408 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Start firewalld] *********************************************
+I, [2016-09-12T11:32:48.325871 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:48.326118 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:48.326191 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Wait for firewalld to start] *********************************
+I, [2016-09-12T11:32:48.838028 #3788]  INFO -- mysql-centos-7: [0;33mchanged: [localhost][0m
+I, [2016-09-12T11:32:48.838328 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:48.838383 #3788]  INFO -- mysql-centos-7: TASK [firewalld : firewalld] ***************************************************
+I, [2016-09-12T11:32:49.217075 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:49.217318 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.217482 #3788]  INFO -- mysql-centos-7: TASK [firewalld : Tag agent with firewalld in dataloop] ************************
+I, [2016-09-12T11:32:49.237550 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:49.244213 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.244296 #3788]  INFO -- mysql-centos-7: TASK [mysql : Create a marker to show whether this is a new installation or not] ***
+I, [2016-09-12T11:32:49.384604 #3788]  INFO -- mysql-centos-7: [0;31mfatal: [localhost]: FAILED! => {"changed": true, "cmd": ["stat", "/var/log/ansible_bootstrap_galera"], "delta": "0:00:00.002467", "end": "2016-09-12 10:32:49.318689", "failed": true, "rc": 1, "start": "2016-09-12 10:32:49.316222", "stderr": "stat: cannot stat ‘/var/log/ansible_bootstrap_galera’: No such file or directory", "stdout": "", "stdout_lines": [], "warnings": []}[0m
+I, [2016-09-12T11:32:49.384688 #3788]  INFO -- mysql-centos-7: [0;36m...ignoring[0m
+I, [2016-09-12T11:32:49.391924 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.392008 #3788]  INFO -- mysql-centos-7: TASK [mysql : Add the percona key to APT] **************************************
+I, [2016-09-12T11:32:49.449072 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:49.458263 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.458351 #3788]  INFO -- mysql-centos-7: TASK [mysql : Add the percona Apt repo] ****************************************
+I, [2016-09-12T11:32:49.508115 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:49.515595 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.515684 #3788]  INFO -- mysql-centos-7: TASK [mysql : Create the mysql_root_password based on the variables] ***********
+I, [2016-09-12T11:32:49.570567 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:49.579583 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.579711 #3788]  INFO -- mysql-centos-7: TASK [mysql : Set selections based on the config file] *************************
+I, [2016-09-12T11:32:49.629249 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:49.639080 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.639166 #3788]  INFO -- mysql-centos-7: TASK [mysql : Install PerconaDB and client libraries] **************************
+I, [2016-09-12T11:32:49.759322 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=[]) [0m
+I, [2016-09-12T11:32:49.765884 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.765984 #3788]  INFO -- mysql-centos-7: TASK [mysql : Install Percona Client Libraries] ********************************
+I, [2016-09-12T11:32:49.892505 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=[]) [0m
+I, [2016-09-12T11:32:49.900010 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.900096 #3788]  INFO -- mysql-centos-7: TASK [mysql : Configure the system with sensible defaults] *********************
+I, [2016-09-12T11:32:49.950958 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:49.960651 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:49.960735 #3788]  INFO -- mysql-centos-7: TASK [mysql : Install the PerconaDB YUM Repo] **********************************
+I, [2016-09-12T11:32:50.415587 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:50.424060 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:50.424144 #3788]  INFO -- mysql-centos-7: TASK [mysql : Install the PerconaDB YUM Repo Key] ******************************
+I, [2016-09-12T11:32:50.783593 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:50.783964 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:50.784018 #3788]  INFO -- mysql-centos-7: TASK [mysql : Install the MySQL Libraries so we can interact] ******************
+I, [2016-09-12T11:32:51.193127 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:51.193447 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:51.193514 #3788]  INFO -- mysql-centos-7: TASK [mysql : Install Percona Server 5.6] **************************************
+I, [2016-09-12T11:32:51.193745 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:51.193910 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:51.193952 #3788]  INFO -- mysql-centos-7: TASK [mysql : Configure the system with sensible defaults] *********************
+I, [2016-09-12T11:32:51.232829 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:51.240898 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:51.240995 #3788]  INFO -- mysql-centos-7: TASK [mysql : Allow gcomm traffic on 4568 under SELinux] ***********************
+I, [2016-09-12T11:32:51.775202 #3788]  INFO -- mysql-centos-7: [0;31mfatal: [localhost]: FAILED! => {"changed": true, "cmd": ["semanage", "port", "-a", "-t", "mysqld_port_t", "-p", "tcp", "4568"], "delta": "0:00:00.368556", "end": "2016-09-12 10:32:51.706136", "failed": true, "rc": 1, "start": "2016-09-12 10:32:51.337580", "stderr": "ValueError: Port tcp/4568 already defined", "stdout": "", "stdout_lines": [], "warnings": []}[0m
+I, [2016-09-12T11:32:51.775287 #3788]  INFO -- mysql-centos-7: [0;36m...ignoring[0m
+I, [2016-09-12T11:32:51.784509 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:51.784594 #3788]  INFO -- mysql-centos-7: TASK [mysql : Bootstrap Galera Clustering (Redhat)] ****************************
+I, [2016-09-12T11:32:51.841229 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:51.851357 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:51.851443 #3788]  INFO -- mysql-centos-7: TASK [mysql : Stop the Bootstrap Galera Clustering (Redhat)] *******************
+I, [2016-09-12T11:32:51.904716 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:51.912793 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:51.912879 #3788]  INFO -- mysql-centos-7: TASK [mysql : Create the mysql_root_password based on the variables] ***********
+I, [2016-09-12T11:32:51.968303 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:51.975681 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:51.975767 #3788]  INFO -- mysql-centos-7: TASK [mysql : Create the client config for root] *******************************
+I, [2016-09-12T11:32:52.016334 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:52.021810 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:52.021892 #3788]  INFO -- mysql-centos-7: TASK [mysql : Create the mysql_root_password based on the variables] ***********
+I, [2016-09-12T11:32:52.152026 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=127.0.0.1) [0m
+I, [2016-09-12T11:32:52.269223 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=localhost) [0m
+I, [2016-09-12T11:32:52.269308 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=::1) [0m
+I, [2016-09-12T11:32:52.269345 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=ip-10-0-0-7) [0m
+I, [2016-09-12T11:32:52.277008 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:52.277093 #3788]  INFO -- mysql-centos-7: TASK [mysql : ensure anonymous users are not in the database] ******************
+I, [2016-09-12T11:32:52.419480 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=localhost) [0m
+I, [2016-09-12T11:32:52.419590 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost] => (item=localhost) [0m
+I, [2016-09-12T11:32:52.426316 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:52.426406 #3788]  INFO -- mysql-centos-7: TASK [mysql : remove the test database] ****************************************
+I, [2016-09-12T11:32:52.466437 #3788]  INFO -- mysql-centos-7: [0;36mskipping: [localhost][0m
+I, [2016-09-12T11:32:52.474005 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:52.474091 #3788]  INFO -- mysql-centos-7: TASK [mysql : Configure the firewall] ******************************************
+I, [2016-09-12T11:32:52.760569 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:52.767553 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:52.767640 #3788]  INFO -- mysql-centos-7: TASK [mysql : Configure the firewall] ******************************************
+I, [2016-09-12T11:32:53.138687 #3788]  INFO -- mysql-centos-7: [0;32mok: [localhost][0m
+I, [2016-09-12T11:32:53.139056 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:53.139158 #3788]  INFO -- mysql-centos-7: TASK [mysql : Make sure the service is running and enabled] ********************
+I, [2016-09-12T11:32:53.206236 #3788]  INFO -- mysql-centos-7: [0;31mfatal: [localhost]: FAILED! => {"changed": false, "failed": true, "msg": "systemd could not find the requested service \"'mysql'\": "}[0m
+I, [2016-09-12T11:32:53.213147 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:53.213233 #3788]  INFO -- mysql-centos-7: NO MORE HOSTS LEFT *************************************************************
+I, [2016-09-12T11:32:53.213273 #3788]  INFO -- mysql-centos-7: 	to retry, use: --limit @/tmp/kitchen/default.retry
+I, [2016-09-12T11:32:53.213304 #3788]  INFO -- mysql-centos-7: 
+I, [2016-09-12T11:32:53.213332 #3788]  INFO -- mysql-centos-7: PLAY RECAP *********************************************************************
+I, [2016-09-12T11:32:53.213363 #3788]  INFO -- mysql-centos-7: [0;31mlocalhost[0m                  : [0;32mok[0m[0;32m=[0m[0;32m12[0m   [0;33mchanged[0m[0;33m=[0m[0;33m1[0m    unreachable=0    [0;31mfailed[0m[0;31m=[0m[0;31m1[0m   
+I, [2016-09-12T11:32:53.213400 #3788]  INFO -- mysql-centos-7: 
+E, [2016-09-12T11:32:53.301686 #3788] ERROR -- mysql-centos-7: Converge failed on instance <mysql-centos-7>.
+E, [2016-09-12T11:32:53.301786 #3788] ERROR -- mysql-centos-7: ------Exception-------
+E, [2016-09-12T11:32:53.301805 #3788] ERROR -- mysql-centos-7: Class: Kitchen::ActionFailed
+E, [2016-09-12T11:32:53.301818 #3788] ERROR -- mysql-centos-7: Message: SSH exited (1) for command: [ANSIBLE_ROLES_PATH=/tmp/kitchen/roles sudo -E -s  ansible-playbook -i /tmp/kitchen/hosts  -c local -M /tmp/kitchen/modules         /tmp/kitchen/default.yml]
+E, [2016-09-12T11:32:53.301831 #3788] ERROR -- mysql-centos-7: ---Nested Exception---
+E, [2016-09-12T11:32:53.301843 #3788] ERROR -- mysql-centos-7: Class: Kitchen::Transport::SshFailed
+E, [2016-09-12T11:32:53.301854 #3788] ERROR -- mysql-centos-7: Message: SSH exited (1) for command: [ANSIBLE_ROLES_PATH=/tmp/kitchen/roles sudo -E -s  ansible-playbook -i /tmp/kitchen/hosts  -c local -M /tmp/kitchen/modules         /tmp/kitchen/default.yml]
+E, [2016-09-12T11:32:53.301865 #3788] ERROR -- mysql-centos-7: ------Backtrace-------
+E, [2016-09-12T11:32:53.301876 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/provisioner/base.rb:76:in `rescue in call'
+E, [2016-09-12T11:32:53.301888 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/provisioner/base.rb:79:in `call'
+E, [2016-09-12T11:32:53.301900 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:373:in `block in converge_action'
+E, [2016-09-12T11:32:53.301911 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:513:in `call'
+E, [2016-09-12T11:32:53.301922 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:513:in `synchronize_or_call'
+E, [2016-09-12T11:32:53.301944 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:478:in `block in action'
+E, [2016-09-12T11:32:53.301958 #3788] ERROR -- mysql-centos-7: /System/Library/Frameworks/Ruby.framework/Versions/2.0/usr/lib/ruby/2.0.0/benchmark.rb:281:in `measure'
+E, [2016-09-12T11:32:53.301970 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:477:in `action'
+E, [2016-09-12T11:32:53.301981 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:369:in `converge_action'
+E, [2016-09-12T11:32:53.301993 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:348:in `block in transition_to'
+E, [2016-09-12T11:32:53.302004 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:347:in `each'
+E, [2016-09-12T11:32:53.302015 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:347:in `transition_to'
+E, [2016-09-12T11:32:53.302026 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/instance.rb:138:in `converge'
+E, [2016-09-12T11:32:53.302038 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/command.rb:176:in `public_send'
+E, [2016-09-12T11:32:53.302049 #3788] ERROR -- mysql-centos-7: /Library/Ruby/Gems/2.0.0/gems/test-kitchen-1.8.0/lib/kitchen/command.rb:176:in `block (2 levels) in run_action'
+E, [2016-09-12T11:32:53.302060 #3788] ERROR -- mysql-centos-7: ----------------------

@@ -1,0 +1,6 @@
+---
+# defaults file for php
+
+php_packages:
+  - php
+  - php-pear

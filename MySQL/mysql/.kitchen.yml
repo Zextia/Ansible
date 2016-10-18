@@ -1,0 +1,23 @@
+---
+platforms:
+  - name: ubuntu-14.04
+    transport:
+      username: ubuntu
+    tags:
+      - Name: ubuntu-14.04-test-kitchen-apache
+  - name: centos-7
+    transport:
+      username: centos
+    provision_command: yum install -y rubygem-rake
+    tags:
+      - Name: centos-7-test-kitchen-mysql
+
+provisioner:
+  hosts: mysql_servers
+
+suites:
+  - name: mysql
+
+verifier:
+  sudo_command: sudo
+

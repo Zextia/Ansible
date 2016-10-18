@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2015 by Delphix. All rights reserved.
+#
+---
+- hosts: mysql_servers
+  sudo: true
+  roles:
+    - common_config
+    - firewalld
+    - ruby2.2
+    - mysql
+  vars:
+    mysqlserver: true
+    mysql_root_password: password123
+    mysql_cluster_primary: true

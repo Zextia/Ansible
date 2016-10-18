@@ -1,0 +1,2 @@
+Defaults    !rootpw,!requiretty,always_set_home,secure_path=/sbin:/bin:/usr/sbin:/usr/bin
+dataloop    ALL=(ALL) NOPASSWD:/bin/mysqladmin,/usr/bin/mysqladmin

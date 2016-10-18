@@ -1,0 +1,52 @@
+---
+# MySQL RHEL Tasks
+#
+
+- name: Install the PerconaDB YUM Repo
+  copy: src=percona-release.repo dest=/etc/yum.repos.d/precona-release.repo owner=root group=root mode=0644
+
+- name: Install the PerconaDB YUM Repo Key
+  copy: src=RPM-GPG-KEY-Percona dest=/etc/pki/rpm-gpg/RPM-GPG-KEY-Percona
+
+- name: Install the MySQL Libraries so we can interact
+  yum: name=MySQL-python state=present
+
+# Install the galera version of Percona so we can cluster at a later
+# date.
+- name: Install Percona Server 5.6
+  yum: name=Percona-XtraDB-Cluster-full-56 state=present
+  when: mysqlserver == True
+
+- name: Configure the system with sensible defaults
+  template: src=my.cnf dest=/etc/my.cnf owner=root group=root mode=0640
+  when: mysqlserver == True
+  notify: restart mysql
+
+- name: Allow gcomm traffic on 4568 under SELinux
+  command: semanage port -a -t mysqld_port_t -p tcp 4568
+  ignore_errors: true
+
+- name: Bootstrap Galera Clustering (Redhat)
+  command: systemctl start mysql@bootstrap.service
+  when: mysql_cluster_primary == True and ( ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' ) and bootstrap_marker_exists is not defined
+
+- name: Stop the Bootstrap Galera Clustering (Redhat)
+  command: systemctl stop mysql@bootstrap.service
+  when: mysql_cluster_primary == True and ( ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' ) and bootstrap_marker_exists is not defined
+
+- name: Start the MySQL cluster properly(Redhat)
+  command: systemctl start mysql
+  when: mysql_cluster_primary == True and ( ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' ) and bootstrap_marker_exists is defined
+
+- name: Flush the handlers now
+  meta: flush_handlers
+  when: mysql_cluster_primary == True and ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' and bootstrap_marker_exists is defined
+
+- name: Create the mysql_root_password based on the variables
+  command: mysql -u root -e "UPDATE user SET password=PASSWORD('{{ mysql_root_password }}') WHERE user = 'root';FLUSH PRIVILEGES" mysql
+#  mysql_user:
+#    name: root 
+#    password: "{{ mysql_root_password }}"
+#    check_implicit_admin: yes
+  when: mysqlserver == True
+

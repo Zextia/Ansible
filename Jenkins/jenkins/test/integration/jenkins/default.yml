@@ -1,0 +1,11 @@
+#
+# Copyright (c) 2015 by Delphix. All rights reserved.
+#
+---
+- hosts: all
+  roles:
+    - firewalld
+    - java
+    - ruby2.2
+    - nginx
+    - jenkins

@@ -1,0 +1,11 @@
+---
+# RHEL and related distros tasks
+- name: Ensure PHP packages are installed
+  yum: name={{ item }} state=present 
+  with_items: php_packages
+  when: php_packages is defined
+  notify: restart httpd
+
+- name: Ensure php.ini present for RHEL
+  template: src=php.ini dest=/etc/php.ini owner=root group=root mode=0644
+  notify: restart httpd

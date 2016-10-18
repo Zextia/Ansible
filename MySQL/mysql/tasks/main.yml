@@ -1,0 +1,70 @@
+---
+# Tasks for MySQL
+
+- name: Create a marker to show whether this is a new installation or not
+  command: stat /var/log/ansible_bootstrap_galera
+  register: bootstrap_marker_exists
+  ignore_errors: true
+
+# include the distro-specific stuff
+- include: debian.yml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- include: rhel.yml
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Bootstrap Galera Clustering (Debian)
+  command: service mysql bootstrap-pxc
+  when: mysql_cluster_primary == True and ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' and bootstrap_marker_exists != "bootstrap_marker_exists"
+
+# Create a password file so that root can login for ansible tasks
+- name: Create the client config for root
+  template: src=root_my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
+  when: mysqlserver == True
+
+- name: Create the mysql_root_password based on the variables
+  mysql_user:
+    name: root 
+    password: "{{ mysql_root_password }}"
+    host: "localhost"
+  when: mysqlserver == True
+  with_items:
+    - 127.0.0.1
+    - localhost
+    - ::1
+    - "{{ ansible_hostname }}"
+  when: mysql_cluster_primary == True and ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: ensure anonymous users are not in the database
+  sudo_user: root
+  mysql_user: name='' host={{ item }} state=absent
+  with_items:
+    - localhost
+    - "{{ inventory_hostname }}"
+  when: mysql_cluster_primary == True and ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: remove the test database
+  mysql_db: name=test state=absent
+  when: mysql_cluster_primary == True and ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Configure the firewall
+  firewalld:
+    service: mysql
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Make sure the service is running and enabled
+  service: name=mysql state=running enabled=true
+
+- name: Allow mysqladmin access for Dataloop
+  copy: src=sudoers_dataloop dest=/etc/sudoers.d/99-dataloop_mysql owner=root group=root mode=0440
+  when: mysqlserver == True and dataloop_enabled is defined and dataloop_enabled == True
+  notify: restart dataloop-agent
+
+- name: Tag agent with mysql in dataloop
+  command: /usr/bin/dataloop-agent -a {{ dataloop_api_key }}  --add-tags  mysql
+  when: mysqlserver == True and dataloop_enabled is defined and dataloop_enabled == True
+
+- name: Create the Bootstrap Marker File
+  shell: touch /var/log/ansible_bootstrap_galera

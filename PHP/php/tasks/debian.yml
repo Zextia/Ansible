@@ -1,0 +1,18 @@
+---
+# PHP Debian Specific Things
+
+- name: Install Packages
+  apt: name={{ item }} state=installed
+  with_items:
+      - libapache2-mod-php5
+      - php5-gd
+      - php5-mysql 
+      - php5-json
+
+- name: Ensure php.ini present for Debian
+  template: src=php.ini dest=/etc/php5/{{ item }}/php.ini owner=root group=root mode=0644
+  notify: restart httpd
+  with_items:
+    - apache2
+    - cgi
+    - cli
